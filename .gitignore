@@ -15,6 +15,7 @@ build/
 # Database
 *.db
 *.sqlite
+backend/chroma_data/
 
 # OS
 .DS_Store
