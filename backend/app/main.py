@@ -1,18 +1,30 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from app.db.connection import test_connection
+from app.db.connection import test_connection, init_db
+from app.db.chromadb_client import test_chromadb
 
 # Lifespan events
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     print("🚀 Starting application...")
+    
+    # Test & initialize PostgreSQL
     if test_connection():
-        print("✅ Database ready")
+        print("✅ PostgreSQL connection verified")
+        init_db()
     else:
-        print("⚠️ Database not connected (will retry)")
+        print("⚠️ PostgreSQL not connected")
+    
+    # Test ChromaDB
+    if test_chromadb():
+        print("✅ ChromaDB ready")
+    else:
+        print("⚠️ ChromaDB connection failed")
+    
     yield
+    
     # Shutdown
     print("🛑 Shutting down application...")
 

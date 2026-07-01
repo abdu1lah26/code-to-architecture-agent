@@ -15,8 +15,8 @@ if not DATABASE_URL:
 # Create engine
 engine = create_engine(
     DATABASE_URL,
-    echo=False,  # Set to True for SQL debugging
-    pool_pre_ping=True,  # Verify connection before use
+    echo=False,
+    pool_pre_ping=True,
 )
 
 # Session factory
@@ -47,5 +47,18 @@ def test_connection():
         return False
 
 
+def init_db():
+    """Create all tables in the database."""
+    try:
+        from app.db.models import Base  # Import here to avoid circular imports
+        Base.metadata.create_all(bind=engine)
+        print("✅ Database tables created/verified")
+        return True
+    except Exception as e:
+        print(f"❌ Error creating tables: {e}")
+        return False
+
+
 if __name__ == "__main__":
-    test_connection()
+    if test_connection():
+        init_db()
