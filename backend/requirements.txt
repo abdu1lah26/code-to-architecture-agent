@@ -11,3 +11,4 @@ chromadb
 networkx
 httpx
 pydantic-settings
+networkx
