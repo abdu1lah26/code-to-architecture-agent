@@ -1,7 +1,26 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+from app.db.connection import test_connection
 
-app = FastAPI(title="Code-to-Architecture Agent", version="0.1.0")
+# Lifespan events
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    print("🚀 Starting application...")
+    if test_connection():
+        print("✅ Database ready")
+    else:
+        print("⚠️ Database not connected (will retry)")
+    yield
+    # Shutdown
+    print("🛑 Shutting down application...")
+
+app = FastAPI(
+    title="Code-to-Architecture Agent",
+    version="0.1.0",
+    lifespan=lifespan
+)
 
 # CORS middleware
 app.add_middleware(
