@@ -9,6 +9,38 @@ from sqlalchemy.orm import Session
 from app.db.models import AnalysisJob, GeneratedDocs, CodeChunk, QAInteraction
 from app.agents.state import AnalysisState
 
+class QAInteractionService:
+    """Service for managing Q&A interactions."""
+
+    @staticmethod
+    def create_interaction(
+        db: Session,
+        job_id: UUID,
+        question: str,
+        answer: str,
+        retrieved_chunks: Optional[list] = None
+    ):
+        """Create a Q&A interaction record."""
+        from app.db.models import QAInteraction
+
+        interaction = QAInteraction(
+            job_id=job_id,
+            question=question,
+            answer=answer,
+            retrieved_chunks=retrieved_chunks
+        )
+        db.add(interaction)
+        db.commit()
+        db.refresh(interaction)
+        return interaction
+
+    @staticmethod
+    def get_interactions(db: Session, job_id: UUID):
+        """Get all Q&A interactions for a job."""
+        from app.db.models import QAInteraction
+
+        return db.query(QAInteraction).filter(QAInteraction.job_id == job_id).all()
+
 
 class AnalysisJobService:
     """Service for managing analysis jobs."""

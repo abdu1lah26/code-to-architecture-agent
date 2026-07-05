@@ -10,8 +10,58 @@ from app.api.schemas import AnalyzeRequest, JobResponse, StatusResponse, DocsRes
 from app.db.connection import get_db
 from app.services.db_service import AnalysisJobService, GeneratedDocsService
 from app.services.analysis_service import AnalysisService
+from app.services.qa_service import QAService, QAInteractionService
+from app.api.schemas import QuestionRequest, AnswerResponse, QAHistoryItem
 
 router = APIRouter(prefix="/api", tags=["analysis"])
+
+@router.post("/ask/{job_id}", response_model=AnswerResponse)
+async def ask_question(
+    job_id: UUID,
+    request: QuestionRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Ask a question about the analyzed codebase.
+    
+    Returns the answer grounded in code chunks from the repository.
+    """
+    # Verify job exists
+    job = AnalysisJobService.get_job(db, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    if job.status != "completed":
+        raise HTTPException(status_code=400, detail="Analysis not complete")
+
+    # Get answer
+    qa_service = QAService(db)
+    result = qa_service.answer_question(job_id, request.question, top_k=request.top_k)
+
+    return AnswerResponse(**result)
+
+
+@router.get("/qa-history/{job_id}", response_model=List[QAHistoryItem])
+async def get_qa_history(job_id: UUID, db: Session = Depends(get_db)):
+    """
+    Get Q&A history for a job.
+    """
+    # Verify job exists
+    job = AnalysisJobService.get_job(db, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    interactions = QAInteractionService.get_interactions(db, job_id)
+
+    return [
+        QAHistoryItem(
+            question=interaction.question,
+            answer=interaction.answer,
+            retrieved_chunks=interaction.retrieved_chunks,
+            created_at=interaction.created_at.isoformat() if interaction.created_at else None
+        )
+        for interaction in interactions
+    ]
 
 
 @router.post("/analyze", response_model=JobResponse)
