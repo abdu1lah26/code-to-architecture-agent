@@ -3,7 +3,7 @@ Pydantic schemas for API requests/responses.
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List, Dict
 from uuid import UUID
 
 class QuestionRequest(BaseModel):
@@ -32,7 +32,7 @@ class AnswerResponse(BaseModel):
     """Response with an answer to a question."""
     success: bool
     answer: str
-    retrieved_chunks: List[CodeChunkInfo] = []
+    retrieved_chunks: list[CodeChunkInfo] = Field(default_factory=list)
     error: Optional[str] = None
 
     class Config:
@@ -65,7 +65,7 @@ class JobResponse(BaseModel):
     job_id: UUID
     status: str
     repo_url: Optional[str] = None
-    created_at: str = None
+    created_at: Optional[str] = None
 
     class Config:
         from_attributes = True

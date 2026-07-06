@@ -41,7 +41,7 @@ async def ask_question(
     return AnswerResponse(**result)
 
 
-@router.get("/qa-history/{job_id}", response_model=List[QAHistoryItem])
+@router.get("/qa-history/{job_id}", response_model=list[QAHistoryItem])
 async def get_qa_history(job_id: UUID, db: Session = Depends(get_db)):
     """
     Get Q&A history for a job.

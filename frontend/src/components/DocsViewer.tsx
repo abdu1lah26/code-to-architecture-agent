@@ -1,14 +1,18 @@
 import { DocsResponse } from "../types";
 import { downloadAsMarkdown } from "../utils/markdown";
 import { useState } from "react";
+import { QAChat } from "./QAChat";
 
 interface DocsViewerProps {
   docs: DocsResponse;
+  jobId: string;
   onNewAnalysis: () => void;
 }
 
-export function DocsViewer({ docs, onNewAnalysis }: DocsViewerProps) {
-  const [viewMode, setViewMode] = useState<"markdown" | "diagram">("markdown");
+export function DocsViewer({ docs, jobId, onNewAnalysis }: DocsViewerProps) {
+  const [viewMode, setViewMode] = useState<"markdown" | "diagram" | "qa">(
+    "markdown",
+  );
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -25,7 +29,9 @@ export function DocsViewer({ docs, onNewAnalysis }: DocsViewerProps) {
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-green-900 mb-2">✅ Analysis Complete!</h2>
+        <h2 className="text-2xl font-bold text-green-900 mb-2">
+          ✅ Analysis Complete!
+        </h2>
         <p className="text-green-700">
           Your architecture documentation has been generated below.
         </p>
@@ -58,25 +64,37 @@ export function DocsViewer({ docs, onNewAnalysis }: DocsViewerProps) {
                 🔗 Diagram
               </button>
             )}
+            <button
+              onClick={() => setViewMode("qa")}
+              className={`px-4 py-2 rounded-lg font-medium transition ${
+                viewMode === "qa"
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-200 text-slate-700 hover:bg-slate-300"
+              }`}
+            >
+              🤖 Q&A
+            </button>
           </div>
 
           <div className="flex-1"></div>
 
-          {/* Action buttons */}
-          <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={handleCopy}
-              className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition text-sm"
-            >
-              {copied ? "✓ Copied" : "📋 Copy"}
-            </button>
-            <button
-              onClick={handleDownload}
-              className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition text-sm"
-            >
-              💾 Download
-            </button>
-          </div>
+          {/* Action buttons (only show for markdown mode) */}
+          {viewMode === "markdown" && (
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={handleCopy}
+                className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition text-sm"
+              >
+                {copied ? "✓ Copied" : "📋 Copy"}
+              </button>
+              <button
+                onClick={handleDownload}
+                className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg font-medium transition text-sm"
+              >
+                💾 Download
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -88,39 +106,62 @@ export function DocsViewer({ docs, onNewAnalysis }: DocsViewerProps) {
               {docs.markdown}
             </div>
           </div>
-        ) : docs.mermaid_diagram ? (
+        ) : viewMode === "diagram" && docs.mermaid_diagram ? (
           <div>
-            <h3 className="text-lg font-bold text-slate-900 mb-4">Architecture Diagram</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-4">
+              Architecture Diagram
+            </h3>
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 overflow-x-auto">
-              <pre className="text-sm text-slate-700 whitespace-pre-wrap">{docs.mermaid_diagram}</pre>
+              <pre className="text-sm text-slate-700 whitespace-pre-wrap">
+                {docs.mermaid_diagram}
+              </pre>
               <p className="text-xs text-slate-500 mt-4">
-                💡 Tip: Copy this diagram and paste it at <a href="https://mermaid.live" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">mermaid.live</a> to view it rendered
+                <a>
+                  {" "}
+                  💡 Tip: Copy this diagram and paste it at{" "}
+                  href="https://mermaid.live" target="_blank" rel="noopener
+                  noreferrer" className="text-blue-600 hover:underline"
+                  mermaid.live
+                </a>{" "}
+                to view it rendered
               </p>
             </div>
           </div>
+        ) : viewMode === "qa" ? (
+          <QAChat jobId={jobId} docsId={docs.docs_id} />
         ) : null}
       </div>
 
       {/* Tech stack */}
-      {docs.tech_stack && Object.keys(docs.tech_stack).length > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-bold text-slate-900 mb-4">🛠️ Technology Stack</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(docs.tech_stack).map(([category, items]) => (
-              <div key={category}>
-                <h4 className="font-medium text-slate-700 mb-2 capitalize">{category}</h4>
-                <div className="flex flex-wrap gap-2">
-                  {Array.isArray(items) && items.map((item, idx) => (
-                    <span key={idx} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                      {item}
-                    </span>
-                  ))}
+      {docs.tech_stack &&
+        Object.keys(docs.tech_stack).length > 0 &&
+        viewMode !== "qa" && (
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h3 className="text-lg font-bold text-slate-900 mb-4">
+              🛠️ Technology Stack
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(docs.tech_stack).map(([category, items]) => (
+                <div key={category}>
+                  <h4 className="font-medium text-slate-700 mb-2 capitalize">
+                    {category}
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {Array.isArray(items) &&
+                      items.map((item, idx) => (
+                        <span
+                          key={idx}
+                          className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* New analysis button */}
       <button

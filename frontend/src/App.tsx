@@ -65,7 +65,7 @@ function App() {
         {/* Main content based on state */}
         {appState === "idle" && (
           <>
-            <RepoInput onSubmit={handleAnalyze} loading={loading} error={error ?? undefined} />
+            <RepoInput onSubmit={handleAnalyze} loading={loading} error={error} />
             <div className="hidden md:block">
               <JobList />
             </div>
@@ -81,8 +81,12 @@ function App() {
           />
         )}
 
-        {appState === "complete" && docs && (
-          <DocsViewer docs={docs} onNewAnalysis={handleNewAnalysis} />
+        {appState === "complete" && docs && job && (
+          <DocsViewer
+            docs={docs}
+            jobId={job.job_id}
+            onNewAnalysis={handleNewAnalysis}
+          />
         )}
       </div>
     </Layout>
