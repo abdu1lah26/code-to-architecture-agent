@@ -593,6 +593,7 @@ Feel free to fork, modify, and learn!
 
 MIT License - feel free to use this project for learning and personal projects.
 
+
 ---
 
 ## Acknowledgments
@@ -607,32 +608,5 @@ Built with:
 * **NetworkX** for graph algorithms
 
 ---
-
-## Technical Details for Interviews
-
-### Key Architectural Decisions
-
-1. **Why Ollama?** - Local LLM inference avoids API costs, enables full privacy, and provides reproducible results across runs.
-
-2. **Why LangGraph?** - Provides better control over agent workflows compared to CrewAI. It enables deterministic node-based orchestration with proper error handling.
-
-3. **Why AST + LLM?** - Combines deterministic parsing (precise and explainable) with flexible LLM reasoning (contextual and adaptive).
-
-4. **Why ChromaDB?** - A lightweight vector database with embedding support, well suited for code snippets and Q&A retrieval.
-
-5. **Why Docker?** - Ensures consistency across development, testing, and production environments.
-
-### Performance Metrics
-
-* AST Parsing: `O(n)`, where `n` = file count
-* Graph Building: `O(n + m)`, where `m` = dependencies
-* Embedding: ~500ms per 1,000 characters
-* Q&A Retrieval: ~50ms (ChromaDB optimized)
-
-### Known Trade-offs
-
-* **Speed vs Quality:** Using Mistral 7B prioritizes speed; switch to Llama 2 13B for better answer quality
-* **Code Size:** Large files (>10k characters) are filtered to reduce analysis time
-* **Hallucination:** Mitigated through aggressive code grounding, with LLM outputs citing source code
 
 ---
