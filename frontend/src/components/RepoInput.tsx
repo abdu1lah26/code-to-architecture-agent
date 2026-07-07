@@ -50,18 +50,6 @@ export function RepoInput({ onSubmit, loading, error }: RepoInputProps) {
             />
             <span className="text-slate-700 font-medium">Local Path</span>
           </label>
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="radio"
-              name="inputType"
-              value="url"
-              checked={inputType === "url"}
-              onChange={() => setInputType("url")}
-              className="mr-2"
-              disabled
-            />
-            <span className="text-slate-700 font-medium text-gray-400">GitHub URL (Coming Soon)</span>
-          </label>
         </div>
 
         {/* Path input */}
