@@ -65,7 +65,7 @@ function App() {
         {/* Main content based on state */}
         {appState === "idle" && (
           <>
-            <RepoInput onSubmit={handleAnalyze} loading={loading} error={error} />
+            <RepoInput onSubmit={handleAnalyze} loading={loading} error={error ?? undefined} />
             <div className="hidden md:block">
               <JobList />
             </div>
