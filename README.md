@@ -567,20 +567,6 @@ kill -9 <PID>
 
 ---
 
-## Future Enhancements
-
-* [ ] GitHub repository cloning (auto-clone from URL)
-* [ ] Support for more languages (Python, Go, Java, Rust)
-* [ ] Web-based deployment (Railway, Render, Fly.io)
-* [ ] VS Code extension
-* [ ] Architecture visualization (3D graph)
-* [ ] Collaborative documentation editing
-* [ ] API documentation generation (OpenAPI)
-* [ ] Performance profiling analysis
-* [ ] Security scanning integration
-
----
-
 ## Contributing
 
 This is an educational project built by Abdullah, a 3rd-year CSE student at MMMUT Gorakhpur.
