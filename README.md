@@ -595,14 +595,6 @@ MIT License - feel free to use this project for learning and personal projects.
 
 ---
 
-## Support & Contact
-
-* **GitHub:** [@abdu1lah26](https://github.com/abdu1lah26)
-* **LinkedIn:** [Abdullah Profile](https://linkedin.com/in/abdu1lah26)
-* **Portfolio:** [codolio.com](https://codolio.com/profile/abdu1lah)
-
----
-
 ## Acknowledgments
 
 Built with:
